@@ -41,22 +41,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function showNote(event){
     if (event.target.id === "delete"){
-      // deleteNote()
+      deleteNote()
       console.log(event.target)
+    } else {
+      const note = event.target.id === "add-note" ? await addANewNote() : await fetchNote(event.target.getAttribute("data-id"))
+      pasteNoteToSideBar(note)
+      const h3 = document.createElement('h3')
+      h3.contentEditable = true;
+      h3.addEventListener("blur", editNote)
+      h3.innerText = note.title
+      const p = document.createElement('p')
+      p.contentEditable = true
+      p.addEventListener("blur", editNote)
+      p.innerText = note.body
+      noteBodyDiv.innerHTML = ''
+      noteBodyDiv.setAttribute("data-id", `${note.id}`)
+      noteBodyDiv.append(h3, p)
     }
-    const note = event.target.id === "add-note" ? await addANewNote() : await fetchNote(event.target.getAttribute("data-id"))
-    pasteNoteToSideBar(note)
-    const h3 = document.createElement('h3')
-    h3.contentEditable = true;
-    h3.addEventListener("blur", editNote)
-    h3.innerText = note.title
-    const p = document.createElement('p')
-    p.contentEditable = true
-    p.addEventListener("blur", editNote)
-    p.innerText = note.body
-    noteBodyDiv.innerHTML = ''
-    noteBodyDiv.setAttribute("data-id", `${note.id}`)
-    noteBodyDiv.append(h3, p)
   }
 
   async function editNote(event){
@@ -91,6 +92,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       })
     })
     .then(res => res.json())
+  }
+
+  function deleteNote(){
+    console.log("delete")
+    // need to know id of note
+    // need to remove parentElement of event.target (the link)
+    // need to remove
   }
 
 })
