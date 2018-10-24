@@ -8,8 +8,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const notes = await fetchNotes()
   pasteNotesOnSideBar(notes)
 
-// Allow users to create, edit and delete notes.
-
   function fetchUser(){
     return fetch("http://localhost:3000/api/v1/users")
     .then(res => res.json())
@@ -41,11 +39,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function showNote(event){
     if (event.target.id === "delete"){
-      deleteNote()
-      console.log(event.target)
+      deleteNote(event)
     } else {
-      const note = event.target.id === "add-note" ? await addANewNote() : await fetchNote(event.target.getAttribute("data-id"))
-      pasteNoteToSideBar(note)
+      let note;
+      if (event.target.id === "add-note"){
+        console.log()
+        note = await addANewNote()
+        pasteNoteToSideBar(note)
+      } else {
+        note = await fetchNote(event.target.getAttribute("data-id"))
+      }
       const h3 = document.createElement('h3')
       h3.contentEditable = true;
       h3.addEventListener("blur", editNote)
@@ -94,11 +97,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     .then(res => res.json())
   }
 
-  function deleteNote(){
-    console.log("delete")
-    // need to know id of note
-    // need to remove parentElement of event.target (the link)
-    // need to remove
+  function deleteNote(event){
+    const noteTitleOnSideBar = event.target.parentElement
+    let noteId = noteTitleOnSideBar.dataset.id
+    console.log(noteTitleOnSideBar, noteId)
+    fetch(`http://localhost:3000/api/v1/notes/${noteId}`, {
+      method: "DELETE"
+    })
+    .then(() => noteTitleOnSideBar.remove())
   }
 
 })
